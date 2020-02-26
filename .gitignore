@@ -43,4 +43,6 @@ Temporary Items
 
 
 *.pgm
+
+database*
 # End of https://www.gitignore.io/api/macos,visualstudiocode

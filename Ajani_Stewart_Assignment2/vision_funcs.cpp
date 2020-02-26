@@ -1,6 +1,7 @@
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+#include <cmath>
 
 #include "image.h"
 #include "DisjointSet.h"
@@ -119,4 +120,70 @@ CVP::Image* create_labeled_image(CVP::Image *binary_image) {
   resolve_equivalencies(labeled_image, labels);
 
   return labeled_image;
+}
+
+double to_degrees(double angle) {
+  return angle * 180.0 / M_PI;
+}
+
+double to_rad(double angle) {
+  return angle * M_PI / 180.0;
+}
+
+std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image) {
+  std::vector<ObjProps> obj_props;
+
+
+  //calculate area and center of mass
+  for (size_t x = 0; x < labeled_image->num_rows(); x++) {
+    for (size_t y = 0; y < labeled_image->num_columns(); y++) {
+      int cur_label = labeled_image->GetPixel(x,y);
+      if (cur_label > 0) {
+        // object i is in region i-1
+        if (cur_label > obj_props.size()) {
+          obj_props.push_back({cur_label,x,y,1,0,0,0,0});
+        } else {
+          //obj_props[cur_label-1] is the right object
+          obj_props[cur_label-1].x_pos_center += x;
+          obj_props[cur_label-1].y_pos_center += y;
+
+          //update area
+          obj_props[cur_label-1].area++;
+        }
+      }
+    }
+  }
+
+  //need ref here sp we modify the actual struct, not make a copy
+  for (auto& o : obj_props) {
+    o.x_pos_center = o.x_pos_center / o.area;
+    o.y_pos_center = o.y_pos_center / o.area;
+  }
+  
+  //calculate orientation and axis of rotation
+  for (size_t x = 0; x < labeled_image->num_rows(); x++) {
+    for (size_t y = 0; y < labeled_image->num_columns(); y++) {
+      int cur_label = labeled_image->GetPixel(x,y);
+      if (cur_label > 0) {
+        int x_prime = x - obj_props[cur_label-1].x_pos_center;
+        int y_prime = y - obj_props[cur_label-1].y_pos_center;
+
+        obj_props[cur_label-1].second_moment_a += x_prime * x_prime;
+        obj_props[cur_label-1].second_moment_b += x_prime * y_prime;
+        obj_props[cur_label-1].second_moment_c += y_prime * y_prime;
+      }
+    }
+  }
+
+  for (auto& o : obj_props) {
+    o.angle_of_rotation = to_degrees(atan2(o.second_moment_b,o.second_moment_a - o.second_moment_c)) / 2;
+    // E = 1/2(a+b)-1/2(a-c)cos(2ϴ)-1/2(bsin(2ϴ))
+    o.min_moment_of_inertia = 0.5 * (o.second_moment_a + o.second_moment_b) 
+                            - 0.5*(o.second_moment_a - o.second_moment_c)*cos(2*o.angle_of_rotation) 
+                            - 0.5*o.second_moment_b*sin(2*o.angle_of_rotation);
+
+    // CVP::DrawLine(o.x_pos_center,o.y_pos_center,o.x_pos_center + 10, (o.x_pos_center + 10)*tan(to_rad(o.angle_of_rotation)),0,labeled_image);
+  }
+
+  return obj_props;
 }

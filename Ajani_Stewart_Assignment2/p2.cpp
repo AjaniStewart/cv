@@ -1,7 +1,5 @@
 #include "image.h"
 #include "vision_funcs.h"
-// #include "DisjointSet.h"
-
 
 #include <string>
 #include <iostream>
@@ -21,15 +19,13 @@ int main(int argc, char** argv) {
   }
 
   CVP::Image* output = create_labeled_image(input);
-  // create_equivalency_table(output,input);
 
   if (!CVP::WriteImage(argv[2],*output)) {
     std::cout << "cannot create file: " << argv[2] << "\n";
     exit(1);
   }
 
-  delete output;
-  delete input;
+  std::cout << "Created labeled image at: " << argv[2] << "\n";
 
   return 0;
 

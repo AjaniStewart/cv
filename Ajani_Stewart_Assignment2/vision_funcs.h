@@ -11,6 +11,8 @@ Purpose: header_file containing all the forward declarations of funcs
 
 #define CVP ComputerVisionProjects
 
+#include <vector>
+
 #include "image.h"
 #include "DisjointSet.h"
 
@@ -23,9 +25,13 @@ Purpose: header_file containing all the forward declarations of funcs
 */
 
 typedef struct {
-  size_t label;
-  size_t row_pos_center;
-  size_t col_pos_center;
+  int label;
+  size_t x_pos_center;
+  size_t y_pos_center;
+  size_t area;
+  double second_moment_a;
+  double second_moment_b;
+  double second_moment_c;
   double min_moment_of_inertia;
   double angle_of_rotation;
 } ObjProps;
@@ -42,5 +48,7 @@ DisjointSet create_equivalency_table(CVP::Image* labeled_image, CVP::Image* bina
 void resolve_equivalencies(CVP::Image *labeled_image, DisjointSet eq_table);
 CVP::Image* create_labeled_image(CVP::Image *binary_image);
 
+std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image);
 
-#endif  //VISION_FUNCS_H
+
+#endif  //VISION_FUNCS_H_

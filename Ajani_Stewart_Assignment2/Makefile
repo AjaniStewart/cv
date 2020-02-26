@@ -20,7 +20,7 @@ EXEC_DIR=.
 
 
 .cc.o:
-	$(CXX) $(CXXFLAGS) $(INCLUDES)  -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 
 #Including
@@ -33,9 +33,9 @@ LIBS_ALL =  -L/usr/lib -L/usr/local/lib
 #First Program (ListTest)
 #DisjointSet.o
 
-OBJS=image.o vision_funcs.o DisjointSet.o p2.o
+OBJS=image.o vision_funcs.o DisjointSet.o p3.o
 
-PROGRAM_NAME=p2
+PROGRAM_NAME=p3
 
 $(PROGRAM_NAME): $(OBJS)
 	g++ $(CXXFLAG) -o $(EXEC_DIR)/$@ $(OBJS) $(INCLUDES) $(LIBS_ALL)
