@@ -176,11 +176,12 @@ std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image) {
   }
 
   for (auto& o : obj_props) {
+    o.second_moment_b *= 2;
     o.angle_of_rotation = to_degrees(atan2(o.second_moment_b,o.second_moment_a - o.second_moment_c)) / 2;
     // E = 1/2(a+b)-1/2(a-c)cos(2ϴ)-1/2(bsin(2ϴ))
     o.min_moment_of_inertia = 0.5 * (o.second_moment_a + o.second_moment_b) 
-                            - 0.5*(o.second_moment_a - o.second_moment_c)*cos(2*o.angle_of_rotation) 
-                            - 0.5*o.second_moment_b*sin(2*o.angle_of_rotation);
+                            - 0.5 * (o.second_moment_a - o.second_moment_c) * cos(2 * o.angle_of_rotation) 
+                            - 0.5 * o.second_moment_b * sin(2 * o.angle_of_rotation);
 
     // CVP::DrawLine(o.x_pos_center,o.y_pos_center,o.x_pos_center + 10, (o.x_pos_center + 10)*tan(to_rad(o.angle_of_rotation)),0,labeled_image);
   }

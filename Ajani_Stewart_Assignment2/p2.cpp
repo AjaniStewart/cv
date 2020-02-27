@@ -9,6 +9,7 @@ int main(int argc, char** argv) {
 
   if (argc != 3) {
     std::cout << usage_string;
+    exit(0);
   }
 
   CVP::Image* input = new CVP::Image;

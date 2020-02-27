@@ -22,8 +22,9 @@ int main(int argc, char** argv) {
     for (auto obj : obj_props) {
       database << obj.label << " " << obj.x_pos_center << " " 
                << obj.y_pos_center << " " << obj.area << " " 
-               << obj.min_moment_of_inertia << " " << obj.angle_of_rotation 
-               << "\n";
+               << obj.min_moment_of_inertia << " " << obj.angle_of_rotation << " "
+               << obj.second_moment_a << " " << obj.second_moment_b << " "
+               << obj.second_moment_c << "\n";
     }
     std::cout << "Wrote database to " << argv[2] << "\n";
 
