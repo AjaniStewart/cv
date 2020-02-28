@@ -1,3 +1,10 @@
+/*
+Author:  Ajani Stewart
+Date:    February 16,2020
+File:    p2.cpp
+Purpose: Driver program to label an image
+*/
+
 #include "image.h"
 #include "vision_funcs.h"
 

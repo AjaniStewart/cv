@@ -1,3 +1,11 @@
+/*
+  Author:  Ajani Stewart
+  Date:    February 15,2020
+  File:    DisjointSet.h
+  Purpose: Defines the disjoint set class
+*/
+
+
 #ifndef DISJOINT_SET_H
 #define DISJOINT_SET_H
 

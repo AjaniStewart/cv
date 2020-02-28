@@ -1,3 +1,11 @@
+/*
+Author:  Ajani Stewart
+Date:    February 25,2020
+File:    p3.cpp
+Purpose:  Driver program to compute object props in label image
+*/
+
+
 #include <iostream>
 #include <vector>
 #include <fstream>

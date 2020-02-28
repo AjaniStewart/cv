@@ -1,3 +1,10 @@
+/*
+Author:  Ajani Stewart
+Date:    February 15,2020
+File:    vision_funcs.cpp
+Purpose: implementation of vision_funcs.h functions
+*/
+
 #include <vector>
 #include <unordered_map>
 #include <iostream>

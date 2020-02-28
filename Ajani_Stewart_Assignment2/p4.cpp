@@ -1,3 +1,11 @@
+/*
+Author:  Ajani Stewart
+Date:    February 27,2020
+File:    p4.cpp
+Purpose: Driver program to recognize objects
+*/
+
+
 #include <fstream>
 #include <iostream>
 #include <vector>

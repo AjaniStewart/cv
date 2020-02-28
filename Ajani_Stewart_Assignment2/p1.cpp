@@ -1,3 +1,11 @@
+/*
+Author:  Ajani Stewart
+Date:    February 15,2020
+File:    p1.cpp
+Purpose: driver code to create a new binary image
+*/
+
+
 #include <iostream>
 #include <exception>
 #include <string>
@@ -7,7 +15,7 @@
 
 int main (int argc, char** argv) {
   std::string usage_string = "usage: p1 [input_image] [input_grey_level_threshold] [output_image]\n";
-  std::string invalid_threshold_string = "Error: input_grey_level_threshold is valid\n";
+  std::string invalid_threshold_string = "Error: input_grey_level_threshold is invalid\n";
   
   if (argc < 4) {
     std::cout << usage_string; 

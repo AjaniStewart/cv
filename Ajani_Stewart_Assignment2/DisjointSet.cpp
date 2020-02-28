@@ -1,6 +1,11 @@
 /* 
-  The code is from the Disjoint Set lecture from Dr. Weiss' CSCI 335 course at Hunter College
-  link: http://www.compsci.hunter.cuny.edu/~sweiss/course_materials/csci335/lecture_notes/chapter08.pdf
+  Author:  Ajani Stewart
+  Date:    February 15,2020
+  File:    DisjointSet.cpp
+  Purpose: implements DisjointSet class
+  
+  The code is from the Disjoint Set lecture from Mark Allen Weiss
+  (Data Structures & Algorithm Analysis in C++, 4th Edition. Mark Allen Weiss. Pearson, New York. ISBN:013284737x)
   Slightly adpated to make it more dynamic
 */
 
