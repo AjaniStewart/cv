@@ -7,6 +7,16 @@
 #include "DisjointSet.h"
 #include "vision_funcs.h"
 
+
+void print_obj_props(const ObjProps& op) {
+  std::cout << "label: " << op.label << " x: " << op.x_pos_center
+    << "\ny: " << op.y_pos_center << " area: " << op.area
+    << "\na: " << op.second_moment_a << " b: " << op.second_moment_b
+    << "\nc: " << op.second_moment_c << " emin: " << op.min_moment_of_inertia
+    << "\nemax: " << op.max_moment_of_inertia << " angle: " << op.angle_of_rotation 
+    << " roundness: " << op.roundness << std::endl; 
+}
+
 CVP::Image* create_binary_image(CVP::Image* in_image, size_t threshold) {
   CVP::Image* out_image = new CVP::Image;
   out_image->AllocateSpaceAndSetSize(in_image->num_rows(),in_image->num_columns());
@@ -130,6 +140,10 @@ double to_rad(double angle) {
   return angle * M_PI / 180.0;
 }
 
+double round_to_0(double d) {
+  return abs(d) > (1/10000.0) ? d : 0;
+}
+
 std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image) {
   std::vector<ObjProps> obj_props;
 
@@ -141,7 +155,7 @@ std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image) {
       if (cur_label > 0) {
         // object i is in region i-1
         if (cur_label > obj_props.size()) {
-          obj_props.push_back({cur_label,x,y,1,0,0,0,0});
+          obj_props.push_back({cur_label,static_cast<double>(x),static_cast<double>(y),1,0,0,0,0});
         } else {
           //obj_props[cur_label-1] is the right object
           obj_props[cur_label-1].x_pos_center += x;
@@ -165,8 +179,8 @@ std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image) {
     for (size_t y = 0; y < labeled_image->num_columns(); y++) {
       int cur_label = labeled_image->GetPixel(x,y);
       if (cur_label > 0) {
-        int x_prime = x - obj_props[cur_label-1].x_pos_center;
-        int y_prime = y - obj_props[cur_label-1].y_pos_center;
+        double x_prime = x - obj_props[cur_label-1].x_pos_center;
+        double y_prime = y - obj_props[cur_label-1].y_pos_center;
 
         obj_props[cur_label-1].second_moment_a += x_prime * x_prime;
         obj_props[cur_label-1].second_moment_b += x_prime * y_prime;
@@ -176,18 +190,43 @@ std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image) {
   }
 
   for (auto& o : obj_props) {
+    o.second_moment_a = round_to_0(o.second_moment_a);
+    o.second_moment_b = round_to_0(o.second_moment_b);
+    o.second_moment_c = round_to_0(o.second_moment_c);
+
     o.second_moment_b *= 2;
-    o.angle_of_rotation = atan2(o.second_moment_b,o.second_moment_a - o.second_moment_c) / 2;
+
+    o.angle_of_rotation = atan2(o.second_moment_b,o.second_moment_a - o.second_moment_c) / 2.0;
     // E = 1/2(a+b)-1/2(a-c)cos(2ϴ)-1/2(bsin(2ϴ))
-    std::cout << o.angle_of_rotation << "\n";
     o.min_moment_of_inertia = 0.5 * (o.second_moment_a + o.second_moment_c) 
                             - 0.5 * (o.second_moment_a - o.second_moment_c) * cos(2 * o.angle_of_rotation) 
                             - 0.5 * o.second_moment_b * sin(2 * o.angle_of_rotation);
 
-    o.angle_of_rotation = to_degrees(o.angle_of_rotation);
+    o.max_moment_of_inertia = 0.5 * (o.second_moment_a + o.second_moment_c) 
+                            - 0.5 * (o.second_moment_a - o.second_moment_c) * cos(2 * o.angle_of_rotation + M_PI_2) 
+                            - 0.5 * o.second_moment_b * sin(2 * o.angle_of_rotation + M_PI_2);
 
-    // CVP::DrawLine(o.x_pos_center,o.y_pos_center,o.x_pos_center + 10, (o.x_pos_center + 10)*tan(to_rad(o.angle_of_rotation)),0,labeled_image);
+    o.roundness = o.min_moment_of_inertia / o.max_moment_of_inertia;
+
+    o.angle_of_rotation = to_degrees(o.angle_of_rotation);
+    
   }
 
   return obj_props;
+}
+
+// size_t max(size_t a, size_t b) {
+//   return a > b ? a : b;
+// }
+
+bool is_similar(double a, double b) {
+  return abs(a-b) <= 0.0001;
+}
+
+std::vector<ObjProps> recognize_objs (std::vector<ObjProps> database_obs, std::vector<ObjProps> image_props, CVP::Image* image) {
+  for (int i = 0; i < database_obs.size(); ++i) {
+    for (int j = 0; j < image_props.size(); ++j) {
+      if (r)
+    }
+  }
 }

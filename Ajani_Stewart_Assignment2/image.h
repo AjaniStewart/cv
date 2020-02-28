@@ -45,7 +45,7 @@ class Image {
   // Sets the pixel in the image at row i and column j
   // to a particular gray_level.
   void SetPixel(size_t i, size_t j, int gray_level) {
-    if (i >= num_rows_ || j >= num_columns_) abort();
+    if (i >= num_rows_ || j >= num_columns_) return;
     pixels_[i][j] = gray_level;
   }
 

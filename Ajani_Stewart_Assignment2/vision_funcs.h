@@ -26,15 +26,19 @@ Purpose: header_file containing all the forward declarations of funcs
 
 typedef struct {
   int label;
-  size_t x_pos_center;
-  size_t y_pos_center;
+  double x_pos_center;
+  double y_pos_center;
   size_t area;
   double second_moment_a;
   double second_moment_b;
   double second_moment_c;
   double min_moment_of_inertia;
+  double max_moment_of_inertia;
   double angle_of_rotation;
+  double roundness;
 } ObjProps;
+
+void print_obj_props(const ObjProps& op);
 
 CVP::Image* create_binary_image(CVP::Image *in_image, size_t threshold);
 
@@ -49,6 +53,8 @@ void resolve_equivalencies(CVP::Image *labeled_image, DisjointSet eq_table);
 CVP::Image* create_labeled_image(CVP::Image *binary_image);
 
 std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image);
+
+std::vector<ObjProps> recognize_objs (std::vector<ObjProps> input_obs, std::vector<ObjProps> image_props, CVP::Image* image);
 
 
 #endif  //VISION_FUNCS_H_
