@@ -29,13 +29,13 @@ typedef struct {
   double x_pos_center;
   double y_pos_center;
   size_t area;
-  double second_moment_a;
-  double second_moment_b;
-  double second_moment_c;
   double min_moment_of_inertia;
   double max_moment_of_inertia;
   double angle_of_rotation;
   double roundness;
+  double second_moment_a;
+  double second_moment_b;
+  double second_moment_c;
 } ObjProps;
 
 void print_obj_props(const ObjProps& op);
@@ -54,7 +54,8 @@ CVP::Image* create_labeled_image(CVP::Image *binary_image);
 
 std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image);
 
-std::vector<ObjProps> recognize_objs (std::vector<ObjProps> input_obs, std::vector<ObjProps> image_props, CVP::Image* image);
+std::vector<ObjProps> recognize_objs (std::vector<ObjProps> input_obs, std::vector<ObjProps> image_props);
 
+double to_rad(double angle);
 
 #endif  //VISION_FUNCS_H_

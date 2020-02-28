@@ -33,9 +33,9 @@ LIBS_ALL =  -L/usr/lib -L/usr/local/lib
 #First Program (ListTest)
 #DisjointSet.o
 
-OBJS=image.o vision_funcs.o DisjointSet.o p3.o
+OBJS=image.o vision_funcs.o DisjointSet.o p4.o
 
-PROGRAM_NAME=p3
+PROGRAM_NAME=p4
 
 $(PROGRAM_NAME): $(OBJS)
 	g++ $(CXXFLAG) -o $(EXEC_DIR)/$@ $(OBJS) $(INCLUDES) $(LIBS_ALL)

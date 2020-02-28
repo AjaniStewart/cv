@@ -45,4 +45,9 @@ Temporary Items
 *.pgm
 
 database*
+match_images
+p1
+p2
+p3
+p4
 # End of https://www.gitignore.io/api/macos,visualstudiocode

@@ -72,11 +72,11 @@ DisjointSet create_equivalency_table(CVP::Image* labeled_image, CVP::Image* bina
   for (size_t row = 0; row < binary_image->num_rows(); row++) {
     for (size_t col = 0; col < binary_image->num_columns(); col++) {
 
-      int A = binary_image->GetPixel(row,col);
+      auto A = binary_image->GetPixel(row,col);
       if (A != 0) { //case 1
-      int B = labeled_image->GetPixel(row,col-1);
-      int C = labeled_image->GetPixel(row-1,col);
-      int D = labeled_image->GetPixel(row-1,col-1);
+      auto B = labeled_image->GetPixel(row,col-1);
+      auto C = labeled_image->GetPixel(row-1,col);
+      auto D = labeled_image->GetPixel(row-1,col-1);
         if (B <= 0 && C <= 0 && D <= 0) { // Case 2
           labels.add();
           labeled_image->SetPixel(row,col,next_label++);
@@ -114,10 +114,10 @@ void resolve_equivalencies(CVP::Image *labeled_image, DisjointSet eq_table) {
 
   for (size_t row = 0; row < labeled_image->num_rows(); row++) {
     for (size_t col = 0; col < labeled_image->num_columns(); col++) {
-      int cur_label = labeled_image->GetPixel(row,col);
+      auto cur_label = labeled_image->GetPixel(row,col);
       if (cur_label != 0) {
-        int root_label = eq_table.find(cur_label-1);
-        int new_label = map[root_label];
+        auto root_label = eq_table.find(cur_label-1);
+        auto new_label = map[root_label];
         labeled_image->SetPixel(row,col,new_label);
       }
     }
@@ -151,11 +151,15 @@ std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image) {
   //calculate area and center of mass
   for (size_t x = 0; x < labeled_image->num_rows(); x++) {
     for (size_t y = 0; y < labeled_image->num_columns(); y++) {
-      int cur_label = labeled_image->GetPixel(x,y);
+      auto cur_label = labeled_image->GetPixel(x,y);
       if (cur_label > 0) {
         // object i is in region i-1
         if (cur_label > obj_props.size()) {
-          obj_props.push_back({cur_label,static_cast<double>(x),static_cast<double>(y),1,0,0,0,0});
+          obj_props.push_back({
+            cur_label,
+            static_cast<double>(x),
+            static_cast<double>(y),
+            1,0,0,0,0,0,0});
         } else {
           //obj_props[cur_label-1] is the right object
           obj_props[cur_label-1].x_pos_center += x;
@@ -177,7 +181,7 @@ std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image) {
   //calculate orientation and axis of rotation
   for (size_t x = 0; x < labeled_image->num_rows(); x++) {
     for (size_t y = 0; y < labeled_image->num_columns(); y++) {
-      int cur_label = labeled_image->GetPixel(x,y);
+      auto cur_label = labeled_image->GetPixel(x,y);
       if (cur_label > 0) {
         double x_prime = x - obj_props[cur_label-1].x_pos_center;
         double y_prime = y - obj_props[cur_label-1].y_pos_center;
@@ -215,18 +219,19 @@ std::vector<ObjProps> analyze_labeled_image(CVP::Image* labeled_image) {
   return obj_props;
 }
 
-// size_t max(size_t a, size_t b) {
-//   return a > b ? a : b;
-// }
-
 bool is_similar(double a, double b) {
-  return abs(a-b) <= 0.0001;
+  return abs(a-b) <= 0.25;
 }
 
-std::vector<ObjProps> recognize_objs (std::vector<ObjProps> database_obs, std::vector<ObjProps> image_props, CVP::Image* image) {
+std::vector<ObjProps> recognize_objs (std::vector<ObjProps> database_obs, std::vector<ObjProps> image_props) {
+  std::vector<ObjProps> matched_objs;
   for (int i = 0; i < database_obs.size(); ++i) {
     for (int j = 0; j < image_props.size(); ++j) {
-      if (r)
+      if (is_similar(database_obs[i].roundness,image_props[j].roundness)) {
+        matched_objs.push_back(image_props[j]);
+      }
     }
   }
+
+  return matched_objs;
 }
