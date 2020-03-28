@@ -31,6 +31,9 @@ class Image {
 
   ~Image();
 
+  void initializeImage();
+  void incrementPixel(size_t i, size_t j);
+
   // Sets the size of the image to the given
   // height (num_rows) and columns (num_columns).
   void AllocateSpaceAndSetSize(size_t num_rows, size_t num_columns);

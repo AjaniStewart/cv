@@ -3,6 +3,8 @@ Name: Ajani Stewart
 All parts of the project was completed
 
 
+PgmImages contains exmaple greyscale images to use
+
 Code that creates binary images from greyscale images, labels individual objects within the image, computes values associated
 with the objects and writes them to a file, and use that file to attempt to identify objects in another image.
 

@@ -67,9 +67,6 @@ CVP::Image* create_binary_image(CVP::Image* in_image, size_t threshold) {
 
 */
 
-/*
-  This function returns the union find data structure associated with the process of labelling image. It also labels labeled_image
-*/
 DisjointSet create_equivalency_table(CVP::Image* labeled_image, CVP::Image* binary_image) {
   DisjointSet labels;
   size_t next_label = 1;

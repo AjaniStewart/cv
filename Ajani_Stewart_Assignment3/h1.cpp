@@ -7,7 +7,6 @@ using namespace std;
 using namespace ComputerVisionProjects;
 
 int convolve(Image* image, int x, int y, int mask[3][3], int dim); 
-
 Image* squared_gradient(Image* image);
 
 int main(int argc, char** argv) {

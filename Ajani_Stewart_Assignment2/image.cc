@@ -48,7 +48,7 @@ void Image::DeallocateSpace() {
 
 int Image::GetPixel(size_t i, size_t j) const {
   if (i >= num_rows_ || j >= num_columns_ || i < 0 || j < 0) {
-    return -1;
+    return 0;
   } 
   return pixels_[i][j];
 }

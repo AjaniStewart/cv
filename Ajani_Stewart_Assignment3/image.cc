@@ -13,6 +13,20 @@ using namespace std;
 
 namespace ComputerVisionProjects {
 
+
+
+void Image::initializeImage() {
+  for (size_t i = 0; i < num_rows_; ++i) {
+    for (size_t j = 0; j < num_columns_; ++j) {
+      pixels_[i][j] = 0;
+    }
+  }
+}
+
+void Image::incrementPixel(size_t i, size_t j) {
+  SetPixel(i,j,GetPixel(i,j)+1);
+}
+
 Image::Image(const Image &an_image){
   AllocateSpaceAndSetSize(an_image.num_rows(), an_image.num_columns());
   SetNumberGrayLevels(an_image.num_gray_levels());
