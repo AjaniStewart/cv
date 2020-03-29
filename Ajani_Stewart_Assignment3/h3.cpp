@@ -1,6 +1,8 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include <string>
+#include <fstream>
 
 #include "image.h"
 
@@ -60,7 +62,7 @@ Image* hough_image(vector<vector<int>> voting_array, int max_votes) {
   image->AllocateSpaceAndSetSize(voting_array.size(), voting_array[0].size());
   image->SetNumberGrayLevels(255);
 
-  cout << max_votes << endl;
+  std::cout << max_votes << endl;
 
   //fit the votes to between 0 and 255
   for (size_t i = 0; i < voting_array.size(); ++i) {
@@ -72,18 +74,40 @@ Image* hough_image(vector<vector<int>> voting_array, int max_votes) {
   return image;
 }
 
+bool write_voting_array(vector<vector<int>> voting_array, const string& path) {
+  ofstream file;
+
+  try {
+    file.open(path);
+  } catch (exception& e) {
+    std::cout << e.what() << endl;
+    return false;
+  }
+
+  for (size_t i = 0; i < voting_array.size(); i++) {
+    for (size_t j = 0; j < voting_array[0].size(); ++j) {
+      file << voting_array[i][j] << " ";
+    }
+    file << "\n";
+  }
+
+  file.close();
+  return true;
+}
+
 
 int main(int argc, char** argv) {
   
-  if (argc != 3) {
-    cout << "usage: h3 [input_binary edge image] [output_grey_level_hough_image]\n";
+  if (argc != 4) {
+    std::cout << "usage: h3 [input_binary edge image] [output_grey_level_hough_image]";
+    std::cout << " [output_Hough-voting-array]\n";
     exit(0);
   }
   
   Image* input = new Image;
   
   if (!ReadImage(argv[1],input)) {
-    cout << "Cannot read input: " << argv[1] << "\n";
+    std::cout << "Cannot read input: " << argv[1] << "\n";
     exit(1);
   }
 
@@ -92,11 +116,17 @@ int main(int argc, char** argv) {
   auto output = hough_image(hough,hough[max_theta][max_rho]);
 
   if (!WriteImage(argv[2],*output)) {
-    cout << "cannot write to file: " << argv[2] << "\n";
+    std::cout << "cannot write to file: " << argv[2] << "\n";
     exit(1);
   }
 
-  cout << "wrote to: " << argv[2] << "\n";
+  if (!write_voting_array(hough,argv[3])) {
+    std::cout << "cannot write to file: " << argv[3] << "\n";
+    exit(1);
+  }
+
+  std::cout << "wrote image to: " << argv[2] << "\n";
+  std::cout << "wrote voting thing to: " << argv[3] << "\n";
 
   return 0;
 }
