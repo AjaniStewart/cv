@@ -32,7 +32,7 @@ all:
 	make h1
 	make h2
 	make h3
-	# make h4
+	make h4
 
 h1: h1.o $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(EXEC_DIR)/$@ $(OBJS) h1.o $(INCLUDES) $(LIBS_ALL)
@@ -43,12 +43,12 @@ h2: h2.o $(OBJS)
 h3: h3.o $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(EXEC_DIR)/$@ $(OBJS) h3.o $(INCLUDES) $(LIBS_ALL)
 
-# h4: h4.o $(OBJS)
-# 	$(CXX) $(CXXFLAGS) -o $(EXEC_DIR)/$@ $(OBJS) h4.o $(INCLUDES) $(LIBS_ALL)
+h4: h4.o $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(EXEC_DIR)/$@ $(OBJS) h4.o $(INCLUDES) $(LIBS_ALL)
 
 .PHONY: cleanall clean
 
 clean:
-	(rm -f *.o; rm h1 h2 h3)
+	(rm -f *.o; rm h1 h2 h3 h4)
 
 (:

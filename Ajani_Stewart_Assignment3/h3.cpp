@@ -18,8 +18,50 @@ using namespace ComputerVisionProjects;
 
 */
 
-vector<vector<int>> hough_lines(Image* image, int& max_rho, int& max_theta) {
+vector<vector<int>> hough_lines(Image* image, int& max_rho, int& max_theta);
 
+Image* hough_image(vector<vector<int>> voting_array, int max_votes);
+
+bool write_voting_array(vector<vector<int>> voting_array, const string& path);
+
+
+int main(int argc, char** argv) {
+  
+  if (argc != 4) {
+    std::cout << "usage: h3 [input_binary edge image] [output_grey_level_hough_image]";
+    std::cout << " [output_Hough-voting-array]\n";
+    exit(0);
+  }
+  
+  Image* input = new Image;
+  
+  if (!ReadImage(argv[1],input)) {
+    std::cout << "Cannot read input: " << argv[1] << "\n";
+    exit(1);
+  }
+
+  int max_rho, max_theta;
+  auto hough = hough_lines(input,max_rho,max_theta);
+  auto output = hough_image(hough,hough[max_theta][max_rho]);
+
+  if (!WriteImage(argv[2],*output)) {
+    std::cout << "cannot write to file: " << argv[2] << "\n";
+    exit(1);
+  }
+
+  if (!write_voting_array(hough,argv[3])) {
+    std::cout << "cannot write to file: " << argv[3] << "\n";
+    exit(1);
+  }
+
+  std::cout << "wrote image to: " << argv[2] << "\n";
+  std::cout << "wrote voting thing to: " << argv[3] << "\n";
+
+  return 0;
+}
+
+
+vector<vector<int>> hough_lines(Image* image, int& max_rho, int& max_theta) {
 
   //number of rho samples
   int R = int(sqrt(image->num_columns() * image->num_columns() +
@@ -93,40 +135,4 @@ bool write_voting_array(vector<vector<int>> voting_array, const string& path) {
 
   file.close();
   return true;
-}
-
-
-int main(int argc, char** argv) {
-  
-  if (argc != 4) {
-    std::cout << "usage: h3 [input_binary edge image] [output_grey_level_hough_image]";
-    std::cout << " [output_Hough-voting-array]\n";
-    exit(0);
-  }
-  
-  Image* input = new Image;
-  
-  if (!ReadImage(argv[1],input)) {
-    std::cout << "Cannot read input: " << argv[1] << "\n";
-    exit(1);
-  }
-
-  int max_rho, max_theta;
-  auto hough = hough_lines(input,max_rho,max_theta);
-  auto output = hough_image(hough,hough[max_theta][max_rho]);
-
-  if (!WriteImage(argv[2],*output)) {
-    std::cout << "cannot write to file: " << argv[2] << "\n";
-    exit(1);
-  }
-
-  if (!write_voting_array(hough,argv[3])) {
-    std::cout << "cannot write to file: " << argv[3] << "\n";
-    exit(1);
-  }
-
-  std::cout << "wrote image to: " << argv[2] << "\n";
-  std::cout << "wrote voting thing to: " << argv[3] << "\n";
-
-  return 0;
 }
