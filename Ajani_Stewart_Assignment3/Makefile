@@ -26,7 +26,7 @@ INCLUDES=  -I.
 #-->All libraries (without LEDA)
 LIBS_ALL =  -L/usr/lib -L/usr/local/lib 
 
-OBJS=image.o
+OBJS=image.o DisjointSet.o 
 
 all: 
 	make h1

@@ -41,8 +41,11 @@ int main(int argc, char** argv) {
   }
 
   int max_rho, max_theta;
+  cout << "1\n";
   auto hough = hough_lines(input,max_rho,max_theta);
+  cout << "2\n";
   auto output = hough_image(hough,hough[max_theta][max_rho]);
+  cout << "3\n";
 
   if (!WriteImage(argv[2],*output)) {
     std::cout << "cannot write to file: " << argv[2] << "\n";
@@ -70,20 +73,22 @@ vector<vector<int>> hough_lines(Image* image, int& max_rho, int& max_theta) {
   //number of theta samples
   int T = 180;
 
+  cout << "a\n";
   vector<vector<int>> voting_array;
-  for (int i = 0; i <= T; ++i) {
+  for (int i = 0; i < T; ++i) {
     voting_array.emplace_back();
     for (int j = 0; j < R; ++j) {
       voting_array[i].push_back(0);
     }
   }
+  cout << "b\n";
 
   int max_votes = 0;
 
   for (size_t i = 0; i < image->num_rows(); ++i) {
     for (size_t j = 0; j < image->num_columns(); ++j) {
       if (image->GetPixel(i,j) != 0) {
-        for (int theta = 0; theta <= T; theta++){
+        for (int theta = 0; theta < T; theta++){
           int rho = i*cos(theta*M_PI/180) + j*sin(theta*M_PI/180);
           voting_array[theta][rho] += 1;
           if (voting_array[theta][rho] > max_votes) {
@@ -95,6 +100,7 @@ vector<vector<int>> hough_lines(Image* image, int& max_rho, int& max_theta) {
       }
     }
   }
+  cout << "c\n";
   return voting_array;
 }
 
