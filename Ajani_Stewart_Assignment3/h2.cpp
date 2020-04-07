@@ -1,8 +1,7 @@
 /*
 Author:  Ajani Stewart
-Date:    February 15,2020
 File:    h2.cpp
-Purpose: driver code to create a new binary image
+Purpose: thresholds an edge image
 */
 
 

@@ -1,3 +1,11 @@
+/* 
+  Author: Ajani Stewart
+  File: h3.cpp
+  Purpose: uses the hough transform for lines to create 
+            and save a voting array to disk from an edge image
+*/ 
+
+
 #include <cmath>
 #include <vector>
 #include <iostream>

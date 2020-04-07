@@ -1,3 +1,8 @@
+/*
+  Name: Ajani Stewart
+  File: h1.cpp
+  Purpose: Creates an edge image from gray scale image using a sobel filter and squared derivative
+*/
 #include <cmath>
 #include <iostream>
 

@@ -1,3 +1,11 @@
+/*
+  Author: Ajani Stewart
+  File: h4.cpp
+  Purpose: Reads and parses hough voting array from file to identify
+           and draw lines on the original gray scale image.
+*/
+
+
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -12,25 +20,25 @@
 using namespace ComputerVisionProjects;
 using namespace std;
 
+//split string where tokens are separated by spaces into a vector of ints
+//ignores values that cannot be interpreted as an int
 vector<int> split (const string& s);
 bool read_voting_array_from_file(const string& filename, vector<vector<int>>& v);
 vector<vector<int>> threshold_voting_array(const vector<vector<int>>& voting_array, int threshold);
+
+//a part of code from previous assignment, labels hotspots and preserves weights to find center of mass
 DisjointSet create_equivalency_table(vector<vector<pair<int,int>>>& weighted_labeled_array, 
   const vector<vector<int>>& voting_array);
 void resolve_equivalencies(vector<vector<pair<int,int>>>& weighted_labeled_array, 
   DisjointSet& eq_table);
 vector<vector<pair<int,int>>> make_weighted_voting_array(const vector<vector<int>>& voting_array, 
   int& num_regions);
+
+//returns a vector line parameters <theta,rho> from the weighted voted array
 vector<pair<double,double>> find_lines(vector<vector<pair<int,int>>> weighted_voting_array, 
   int num_regions);
 void draw_lines_on_image(Image* image, const vector<pair<double,double>>& lines);
 
-
-
-//step 1: store the votes and the region label in a tuple when using sequential labeling algo
-//step 2: find center of area using the votes as the weighted thing
-//step 3: ???
-//step 4: profit
 int main(int argc, char** argv) {
 
   if (argc != 5) {
@@ -61,7 +69,7 @@ int main(int argc, char** argv) {
     cout << "could not read value for threshold\n";
     exit(EXIT_FAILURE);
   }
-  auto voting_array = threshold_voting_array(voting_array,threshold);
+  voting_array = threshold_voting_array(voting_array,threshold);
   int num_weights;
   auto weighted_voting_array = make_weighted_voting_array(voting_array,num_weights);
   auto lines = find_lines(weighted_voting_array,num_weights);
@@ -155,21 +163,18 @@ DisjointSet create_equivalency_table(vector<vector<pair<int,int>>>& weighted_lab
       if (A != 0) { //case 1
       int B;
       try {
-        // B = weighted_labeled_array->GetPixel(row,col-1);
         B = weighted_labeled_array.at(row).at(col-1).first;
       } catch (out_of_range& e) {
         B = 0;
       }
       int C;
       try {
-        // B = weighted_labeled_array->GetPixel(row,col-1);
         C = weighted_labeled_array.at(row-1).at(col).first;
       } catch (out_of_range& e) {
         C = 0;
       }
       int D;
       try {
-        // B = weighted_labeled_array->GetPixel(row,col-1);
         D = weighted_labeled_array.at(row-1).at(col-1).first;
       } catch (out_of_range& e) {
         D = 0;
@@ -177,19 +182,13 @@ DisjointSet create_equivalency_table(vector<vector<pair<int,int>>>& weighted_lab
         if (B <= 0 && C <= 0 && D <= 0) { // Case 2
           labels.add();
           weighted_labeled_array[row][col].first = next_label++;
-          // weighted_labeled_array->SetPixel(row,col,next_label++);
         } else if (D > 0) { // Case 3
-          // weighted_labeled_array->SetPixel(row,col,D);
           weighted_labeled_array[row][col].first = D;
         } else if (B > 0 && (C <= 0)) { //Case 4
-          // weighted_labeled_array->SetPixel(row,col,B);
           weighted_labeled_array[row][col].first = B;
         } else if (C > 0 && B <= 0) { //Case 4
-          // weighted_labeled_array->SetPixel(row,col,C);
           weighted_labeled_array[row][col].first = C;
         } else if (B > 0 && C > 0 && B != C) { //Case 5
-          // B-1, C-1 because region 1 is at index 0, region N at index N-1
-          //have to find because
           labels.set_union(labels.find(B-1),labels.find(C-1));
           weighted_labeled_array[row][col].first = B;
         }
@@ -198,8 +197,6 @@ DisjointSet create_equivalency_table(vector<vector<pair<int,int>>>& weighted_lab
       } 
     }
   }
-  // size_t num_regions = labels.num_roots();
-  // std::cout << "There are " << num_regions << " objects in this image!\n";
   return labels;
 }
 
