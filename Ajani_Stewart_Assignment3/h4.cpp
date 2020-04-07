@@ -15,7 +15,7 @@
 #include <cmath>
 
 #include "image.h"
-#include "DisjointSet.h"
+#include "disjointset.h"
 
 using namespace ComputerVisionProjects;
 using namespace std;

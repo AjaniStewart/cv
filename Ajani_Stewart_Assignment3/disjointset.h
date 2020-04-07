@@ -1,7 +1,7 @@
 /*
   Author:  Ajani Stewart
   Date:    February 15,2020
-  File:    DisjointSet.h
+  File:    disjointSet.h
   Purpose: Defines the disjoint set class
 */
 

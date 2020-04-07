@@ -1,7 +1,7 @@
 /* 
   Author:  Ajani Stewart
   Date:    February 15,2020
-  File:    DisjointSet.cpp
+  File:    disjointSet.cpp
   Purpose: implements DisjointSet class
   
   The code is from the Disjoint Set lecture from Mark Allen Weiss
