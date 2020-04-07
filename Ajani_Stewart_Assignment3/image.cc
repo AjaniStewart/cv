@@ -152,7 +152,7 @@ bool WriteImage(const string &filename, const Image &an_image) {
 // "Computer Graphics. Principles and practice", 
 // 2nd ed., 1990, section 3.2.2);  
 void DrawLine(int x0, int y0, int x1, int y1, int color,
-	      Image *an_image) {  
+	      Image *an_image, bool auto_contrast) {  
   if (an_image == nullptr) abort();
 
 #ifdef SWAP
@@ -231,7 +231,14 @@ void DrawLine(int x0, int y0, int x1, int y1, int color,
   done = 0;
 
   while (!done) {
-    an_image->SetPixel(x,y,color);
+    if (auto_contrast) {
+      if (an_image->GetPixel(x,y) > 128) {
+        an_image->SetPixel(x,y,0);
+      } else {
+        an_image->SetPixel(x,y,255);
+      }
+    } else 
+      an_image->SetPixel(x,y,color);
   
     // Move to the next point.
     switch(dir) {

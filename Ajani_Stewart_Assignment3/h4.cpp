@@ -4,6 +4,7 @@
 #include <utility>
 #include <unordered_map>
 #include <stdexcept>
+#include <cmath>
 
 #include "image.h"
 #include "DisjointSet.h"
@@ -14,9 +15,15 @@ using namespace std;
 vector<int> split (const string& s);
 bool read_voting_array_from_file(const string& filename, vector<vector<int>>& v);
 vector<vector<int>> threshold_voting_array(const vector<vector<int>>& voting_array, int threshold);
-DisjointSet create_equivalency_table(vector<vector<pair<int,int>>>& weighted_labeled_array,const vector<vector<int>>& voting_array);
-void resolve_equivalencies(vector<vector<pair<int,int>>>& weighted_labeled_array,DisjointSet& eq_table);
-vector<vector<pair<int,int>>> make_weighted_voting_array(const vector<vector<int>>& voting_array);
+DisjointSet create_equivalency_table(vector<vector<pair<int,int>>>& weighted_labeled_array, 
+  const vector<vector<int>>& voting_array);
+void resolve_equivalencies(vector<vector<pair<int,int>>>& weighted_labeled_array, 
+  DisjointSet& eq_table);
+vector<vector<pair<int,int>>> make_weighted_voting_array(const vector<vector<int>>& voting_array, 
+  int& num_regions);
+vector<pair<double,double>> find_lines(vector<vector<pair<int,int>>> weighted_voting_array, 
+  int num_regions);
+void draw_lines_on_image(Image* image, const vector<pair<double,double>>& lines);
 
 
 
@@ -26,22 +33,47 @@ vector<vector<pair<int,int>>> make_weighted_voting_array(const vector<vector<int
 //step 4: profit
 int main(int argc, char** argv) {
 
-  // vector<vector<int>> a {{1,2,4},{4,3,1},{2,2,5}};
+  if (argc != 5) {
+    cout << "usage: ./h4 [input_gray_level_image] [input_hough_voting_array]";
+    cout << " [input_hough_threshold] [output_gray_level_image]\n";
+    exit(EXIT_SUCCESS);
+  }
 
-  // auto b = threshold_voting_array(a,3);
+  Image* image = new Image;
 
-  vector<vector<int>> a;
-  read_voting_array_from_file("t",a);
-  auto b = make_weighted_voting_array(a);
+  if (!ReadImage(argv[1], image)) {
+    cout << "couldnt read from " << argv[1] << "\n";
+    exit(EXIT_FAILURE);
+  }
 
-  // for (const auto& v: a) {
-  //   for (const auto& q : v) {
-  //     cout << q << " ";
-  //   }
-  //   cout << "\n";
-  // }
+  vector<vector<int>> voting_array;
 
-  // cout << a.size() << endl;
+  if (!read_voting_array_from_file(argv[2],voting_array)) {
+    cout << "couldnt read from " << argv[2] << "\n";
+    exit(EXIT_FAILURE);
+  }
+
+  int threshold;
+
+  try {
+    threshold = stoi(argv[3]);
+  } catch(exception& e) {
+    cout << "could not read value for threshold\n";
+    exit(EXIT_FAILURE);
+  }
+  auto voting_array = threshold_voting_array(voting_array,threshold);
+  int num_weights;
+  auto weighted_voting_array = make_weighted_voting_array(voting_array,num_weights);
+  auto lines = find_lines(weighted_voting_array,num_weights);
+
+  cout << "found " << lines.size() << " lines\n";
+  draw_lines_on_image(image,lines);
+
+  if (!WriteImage(argv[4], *image)) {
+    cout << "couldnt write image to" << argv[4] << "\n";
+    exit(EXIT_FAILURE);
+  }
+
   return 0;
 }
 
@@ -191,10 +223,54 @@ void resolve_equivalencies(vector<vector<pair<int,int>>>& weighted_labeled_array
   }
 }
 
-vector<vector<pair<int,int>>> make_weighted_voting_array(const vector<vector<int>>& voting_array) {
+vector<vector<pair<int,int>>> make_weighted_voting_array(const vector<vector<int>>& voting_array, int& num_regions) {
   vector<vector<pair<int,int>>> weighted_labeled_array;
   DisjointSet labels = create_equivalency_table(weighted_labeled_array, voting_array);
+  num_regions = labels.num_roots();
   resolve_equivalencies(weighted_labeled_array, labels);
 
   return weighted_labeled_array;
+}
+
+vector<pair<double,double>> find_lines(vector<vector<pair<int,int>>> weighted_voting_array, int num_regions) {
+  vector<pair<double,double>> line_params;
+  vector<int> weights;
+
+  for (int i = 0; i < num_regions; ++i) {
+    weights.push_back(0);
+    line_params.emplace_back(0,0);
+  }
+  //weight i is in region i-1
+  for (size_t theta = 0; theta < weighted_voting_array.size(); ++theta) {
+    for (size_t rho = 0; rho < weighted_voting_array[0].size(); ++rho) {
+      weights[weighted_voting_array[theta][rho].first-1] += weighted_voting_array[theta][rho].second;
+    }
+  }
+
+  for (size_t theta = 0; theta < weighted_voting_array.size(); ++theta) {
+    for (size_t rho = 0; rho < weighted_voting_array[0].size(); ++rho) {
+      auto label = weighted_voting_array[theta][rho].first;
+      if (label > 0) {
+        auto total_votes = weights[label-1];
+        line_params[label-1].first += weighted_voting_array[theta][rho].second / double(total_votes) * theta;
+        line_params[label-1].second += weighted_voting_array[theta][rho].second / double(total_votes) * rho;
+      }
+    }
+  }
+  return line_params;
+}
+
+void draw_lines_on_image(Image* image, const vector<pair<double,double>>& lines) {
+  for (const auto& line : lines) {
+    auto theta = line.first;
+    auto rho = line.second;
+
+    int y0 = 0;
+    int y1 = image->num_columns();
+
+    int x0 = (rho - y0*sin(theta*M_PI / 180))/cos(theta*M_PI / 180);
+    int x1 = (rho - y1*sin(theta*M_PI / 180))/cos(theta*M_PI / 180);
+
+    DrawLine(x0,y0,x1,y1,255,image,true);
+  }
 }

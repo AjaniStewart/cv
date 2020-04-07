@@ -41,11 +41,8 @@ int main(int argc, char** argv) {
   }
 
   int max_rho, max_theta;
-  cout << "1\n";
   auto hough = hough_lines(input,max_rho,max_theta);
-  cout << "2\n";
   auto output = hough_image(hough,hough[max_theta][max_rho]);
-  cout << "3\n";
 
   if (!WriteImage(argv[2],*output)) {
     std::cout << "cannot write to file: " << argv[2] << "\n";
@@ -58,7 +55,7 @@ int main(int argc, char** argv) {
   }
 
   std::cout << "wrote image to: " << argv[2] << "\n";
-  std::cout << "wrote voting thing to: " << argv[3] << "\n";
+  std::cout << "wrote voting array to: " << argv[3] << "\n";
 
   return 0;
 }
@@ -73,7 +70,6 @@ vector<vector<int>> hough_lines(Image* image, int& max_rho, int& max_theta) {
   //number of theta samples
   int T = 180;
 
-  cout << "a\n";
   vector<vector<int>> voting_array;
   for (int i = 0; i < T; ++i) {
     voting_array.emplace_back();
@@ -81,7 +77,6 @@ vector<vector<int>> hough_lines(Image* image, int& max_rho, int& max_theta) {
       voting_array[i].push_back(0);
     }
   }
-  cout << "b\n";
 
   int max_votes = 0;
 
@@ -100,7 +95,6 @@ vector<vector<int>> hough_lines(Image* image, int& max_rho, int& max_theta) {
       }
     }
   }
-  cout << "c\n";
   return voting_array;
 }
 
@@ -110,7 +104,6 @@ Image* hough_image(vector<vector<int>> voting_array, int max_votes) {
   image->AllocateSpaceAndSetSize(voting_array.size(), voting_array[0].size());
   image->SetNumberGrayLevels(255);
 
-  std::cout << max_votes << endl;
 
   //fit the votes to between 0 and 255
   for (size_t i = 0; i < voting_array.size(); ++i) {

@@ -48,7 +48,7 @@ class Image {
   // Sets the pixel in the image at row i and column j
   // to a particular gray_level.
   void SetPixel(size_t i, size_t j, int gray_level) {
-    if (i >= num_rows_ || j >= num_columns_) return;
+    if (i >= num_rows_ || j >= num_columns_ || i < 0 || j < 0) return;
     pixels_[i][j] = gray_level;
   }
 
@@ -77,7 +77,7 @@ bool WriteImage(const std::string &output_filename, const Image &an_image);
 // IMPORTANT: (x0,y0) and (x1,y1) can lie outside the image 
 //   boundaries, so SetPixel() should check the coordinates passed to it.
 void DrawLine(int x0, int y0, int x1, int y1, int color,
-	      Image *an_image);
+	      Image *an_image, bool auto_contrast = false);
 
 }  // namespace ComputerVisionProjects
 
