@@ -26,7 +26,7 @@ INCLUDES=  -I.
 #-->All libraries (without LEDA)
 LIBS_ALL =  -L/usr/lib -L/usr/local/lib 
 
-OBJS=image.o DisjointSet.o 
+OBJS=image.o disjointset.o 
 
 all: 
 	make h1
@@ -48,7 +48,28 @@ h4: h4.o $(OBJS)
 
 .PHONY: cleanall clean
 
+
 clean:
-	(rm -f *.o; rm h1 h2 h3 h4)
+	(rm -fP *.o; rm -P h1 h2 h3 h4; rm -fP *.pgm; rm -fP *Output*)
+
+
+runall:
+	make run1
+	make run2
+	open h4Output*
+
+run1:
+	./h1 images/hough_simple_1.pgm h1Output.1.pgm
+	./h2 h1Output.1.pgm 75 h2Output.1.pgm	
+	./h3 h2Output.1.pgm h3Output.1.pgm h3Output.1.txt
+	./h4 images/hough_simple_1.pgm h3Output.1.txt 280 h4Output.1.pgm
+
+run2:
+	./h1 images/hough_simple_2.pgm h1Output.2.pgm
+	./h2 h1Output.2.pgm 55 h2Output.2.pgm	
+	./h3 h2Output.2.pgm h3Output.2.pgm h3Output.2.txt
+	./h4 images/hough_simple_2.pgm h3Output.2.txt 280 h4Output.2.pgm
+
+
 
 (:

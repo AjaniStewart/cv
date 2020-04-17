@@ -10,7 +10,7 @@
 */
 
 
-#include "DisjointSet.h"
+#include "disjointset.h"
 
 #include <algorithm>
 #include <iostream>
