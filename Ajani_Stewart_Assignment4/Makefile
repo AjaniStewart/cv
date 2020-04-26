@@ -32,7 +32,7 @@ all:
 	make s1
 	make s2
 	make s3
-	# make s4
+	make s4
 
 s1: s1.o $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(EXEC_DIR)/$@ $(OBJS) s1.o $(INCLUDES) $(LIBS_ALL)
@@ -43,8 +43,8 @@ s2: s2.o $(OBJS)
 s3: s3.o $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(EXEC_DIR)/$@ $(OBJS) s3.o $(INCLUDES) $(LIBS_ALL)
 
-# s4: s4.o $(OBJS)
-# 	$(CXX) $(CXXFLAGS) -o $(EXEC_DIR)/$@ $(OBJS) s4.o $(INCLUDES) $(LIBS_ALL)
+s4: s4.o $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(EXEC_DIR)/$@ $(OBJS) s4.o $(INCLUDES) $(LIBS_ALL)
 
 .PHONY: cleanall clean
 
