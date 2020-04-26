@@ -30,7 +30,7 @@ typedef struct {
   double z;
 } n_vec;
 
-n_vec find_surface_normal(Image* image, int x, int y, int x_center, int y_center, double radius) {
+n_vec find_source_direction(Image* image, int x, int y, int x_center, int y_center, double radius) {
 
   n_vec n;
   x -= x_center;
@@ -54,7 +54,7 @@ n_vec find_surface_normal(Image* image, int x, int y, int x_center, int y_center
   n.y = n.y * image->GetPixel(y+y_center,x+x_center) * -1;
   n.z = n.z * image->GetPixel(y+y_center,x+x_center);
   return n;
-} // end find_surface_normal
+} // end find_source_direction
 
 vector<double> split (const string& s) {
   vector<double> res;
@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
   for (const auto& image : images) {
     int bx, by;
     find_brightest_spot(image,bx,by);
-    auto normal = find_surface_normal(image,bx,by,params[0],params[1],params[2]);
+    auto normal = find_source_direction(image,bx,by,params[0],params[1],params[2]);
     normals.push_back(normal);
   }
 
