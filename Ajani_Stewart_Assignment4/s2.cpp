@@ -1,3 +1,10 @@
+/*
+  Author: Ajani Stewart
+  File: s2.cpp
+  Purpose: computes light source directions from three images and writes them to disk
+*/
+
+
 #include <iostream>
 #include <cmath>
 #include <fstream>
@@ -8,6 +15,64 @@
 
 using namespace ComputerVisionProjects;
 using namespace std;
+
+typedef struct {
+  double x;
+  double y;
+  double z;
+} n_vec;
+
+void find_brightest_spot(Image* image, int& bx, int& by);
+
+n_vec find_source_direction(Image* image, int x, int y, int x_center, int y_center, double radius);
+
+vector<double> split (const string& s);
+
+void read_params_from_file (string filename, vector<double>& params);
+
+void write_directions_to_file(string filename, const vector<n_vec>& normals);
+
+int main(int argc, char** argv) {
+  if (argc != 6) {
+    cout << "usage: ./s2 [input params file] [image1] [image2] [image3] [output directions file]\n";
+    return EXIT_SUCCESS;
+  }
+
+  vector<double> params;
+  read_params_from_file(argv[1], params);
+  Image* image1 = new Image;
+  Image* image2 = new Image;
+  Image* image3 = new Image;
+
+  if (!ReadImage(argv[2], image1)) {
+    cout << "could not read file: " << argv[2] << "\n";
+    return EXIT_FAILURE;
+  }
+
+  if (!ReadImage(argv[3],image2)) {
+    cout << "could not read file: " << argv[3] << "\n";
+    return EXIT_FAILURE;
+  }
+
+  if (!ReadImage(argv[4],image3)) {
+    cout << "could not read file: " << argv[4] << "\n";
+    return EXIT_FAILURE;
+  }
+
+  vector<Image*> images { image1, image2, image3 };
+  vector<n_vec> normals;
+  for (const auto& image : images) {
+    int bx, by;
+    find_brightest_spot(image,bx,by);
+    auto normal = find_source_direction(image,bx,by,params[0],params[1],params[2]);
+    normals.push_back(normal);
+  }
+
+  write_directions_to_file(argv[5],normals);
+
+  cout << "wrote source directions to: " << argv[5] << "\n";
+  return EXIT_SUCCESS;
+}// end main
 
 
 void find_brightest_spot(Image* image, int& bx, int& by) {
@@ -24,11 +89,6 @@ void find_brightest_spot(Image* image, int& bx, int& by) {
   } //end for
 } //end find_brightest_spot
 
-typedef struct {
-  double x;
-  double y;
-  double z;
-} n_vec;
 
 n_vec find_source_direction(Image* image, int x, int y, int x_center, int y_center, double radius) {
 
@@ -36,7 +96,6 @@ n_vec find_source_direction(Image* image, int x, int y, int x_center, int y_cent
   x -= x_center;
   y -= y_center;
 
-  cout << (radius*radius)-(x*x)-(y*y) << "\n";
   n.x = x/(sqrt(radius*radius-x*x-y*y));
   n.y = y/(sqrt(radius*radius-x*x-y*y));
   n.z = 1;
@@ -83,58 +142,13 @@ void read_params_from_file (string filename, vector<double>& params) {
   string line;
   getline(file,line);
   params = split(line);
-  cout << line << endl;
   file.close();
 }
 
-
-void write_normals_to_file(string filename, const vector<n_vec>& normals) {
+void write_directions_to_file(string filename, const vector<n_vec>& normals) {
   ofstream file(filename);
   for (const auto& normal : normals) {
     file << normal.x << " " << normal.y << " " << normal.z << "\n";
   }
   file.close();
 }
-
-
-
-int main(int argc, char** argv) {
-  if (argc != 6) {
-    cout << "usage: ./s2 [input params file] [image1] [image2] [image3] [output directions file]\n";
-    return EXIT_SUCCESS;
-  }
-
-  vector<double> params;
-  read_params_from_file(argv[1], params);
-  Image* image1 = new Image;
-  Image* image2 = new Image;
-  Image* image3 = new Image;
-
-  if (!ReadImage(argv[2], image1)) {
-    cout << "could not read file: " << argv[2] << "\n";
-    return EXIT_FAILURE;
-  }
-
-  if (!ReadImage(argv[3],image2)) {
-    cout << "could not read file: " << argv[3] << "\n";
-    return EXIT_FAILURE;
-  }
-
-  if (!ReadImage(argv[4],image3)) {
-    cout << "could not read file: " << argv[4] << "\n";
-    return EXIT_FAILURE;
-  }
-
-  vector<Image*> images { image1, image2, image3 };
-  vector<n_vec> normals;
-  for (const auto& image : images) {
-    int bx, by;
-    find_brightest_spot(image,bx,by);
-    auto normal = find_source_direction(image,bx,by,params[0],params[1],params[2]);
-    normals.push_back(normal);
-  }
-
-  write_normals_to_file(argv[5],normals);
-
-  return EXIT_SUCCESS;
-}// end main

@@ -1,3 +1,9 @@
+/*
+  Author: Ajani Stewart
+  File: s4.cpp
+  Purpose: computes surface albedo of object from images
+*/
+
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -12,6 +18,85 @@ using namespace std;
 
 typedef vector<vector<double>> d_matrix;
 
+void init_d_matrix(d_matrix& d, size_t n);
+
+void getCofactor(d_matrix& A, d_matrix& temp, int p, int q, int n);
+
+double determinant(d_matrix& A, int n);
+
+void adjoint(d_matrix& A, d_matrix& adj);
+
+bool inverse(d_matrix& A, d_matrix& inverse);
+
+double dot_product(vector<double> a, vector<double> b);
+
+vector<double> compute_surface_normal(d_matrix inverse_source_matrix, vector<double> intensities);
+
+double compute_vector_length(const vector<double>& v);
+
+Image* compute_albedo_in_images(Image* i1, Image* i2, Image* i3, 
+          int thresh, d_matrix inverse_source_matrix);
+
+vector<double> split (const string& s);
+
+bool read_params_from_file(const string& filename, d_matrix& v);
+
+
+int main(int argc, char** argv) 
+{ 
+  if (argc != 7) {
+    cout << "usage: ./s3 [input_directions] [image 1] [image 2] [image 3] ";
+    cout << "[threshold] [output]\n";
+    exit(EXIT_SUCCESS);
+  }
+
+  d_matrix source_directions;
+  if (!read_params_from_file(argv[1],source_directions)) {
+    cout << "could not read from file: " << argv[1] << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  Image* i1 = new Image;
+  if (!ReadImage(argv[2],i1)) {
+    cout << "could not read from file: " << argv[2] << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  Image* i2 = new Image;
+  if (!ReadImage(argv[3],i2)) {
+    cout << "could not read from file: " << argv[3] << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  Image* i3 = new Image;
+  if (!ReadImage(argv[4],i3)) {
+    cout << "could not read from file: " << argv[4] << endl;
+    exit(EXIT_FAILURE);
+  }
+
+
+  int threshold;
+  try {
+    threshold = stoi(argv[5]); 
+  } catch (exception& e) {
+    cout << "invalid value for threshold: " << e.what() << "\n";
+    exit(EXIT_FAILURE);
+  }
+
+  d_matrix source_inverse;
+  init_d_matrix(source_inverse,source_directions.size());
+
+  inverse(source_directions,source_inverse);
+  Image* out = compute_albedo_in_images(i1,i2,i3,threshold,source_inverse);
+  if (!WriteImage(argv[6],*out)) {
+    cout << "could not write image to: " << argv[6] << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  cout << "wrote image to: " << argv[6] << endl;
+  exit(EXIT_SUCCESS);
+} 
+
 //code for finding the inverse of a matrix is from : https://www.geeksforgeeks.org/adjoint-inverse-matrix/
 
 void init_d_matrix(d_matrix& d, size_t n) {
@@ -23,9 +108,9 @@ void init_d_matrix(d_matrix& d, size_t n) {
   }
 }
 
-
 // Function to get cofactor of A[p][q] in temp[][]. n is current 
 // dimension of A[][] 
+
 void getCofactor(d_matrix& A, d_matrix& temp, int p, int q, int n) { 
 	int i = 0, j = 0; 
 	// Looping for each element of the matrix 
@@ -140,16 +225,6 @@ double compute_vector_length(const vector<double>& v) {
   return sqrt(length);
 }
 
-vector<double> compute_unit_vector(const vector<double>& v) {
-  auto length = compute_vector_length(v);
-  vector<double> res;
-  for (auto& i : v) {
-   res.push_back(i/length);
-  }
-
-  return res;
-}
-
 Image* compute_albedo_in_images(Image* i1, Image* i2, Image* i3, 
           int thresh, d_matrix inverse_source_matrix) {
   Image* out = new Image(*i1);
@@ -234,58 +309,3 @@ bool read_params_from_file(const string& filename, d_matrix& v) {
     return false;
   }
 }
-
-int main(int argc, char** argv) 
-{ 
-  if (argc != 7) {
-    cout << "usage: ./s3 [input_directions] [image 1] [image 2] [image 3] ";
-    cout << "[threshold] [output]\n";
-    exit(EXIT_SUCCESS);
-  }
-
-  d_matrix source_directions;
-  if (!read_params_from_file(argv[1],source_directions)) {
-    cout << "could not read from file: " << argv[1] << endl;
-    exit(EXIT_FAILURE);
-  }
-
-  Image* i1 = new Image;
-  if (!ReadImage(argv[2],i1)) {
-    cout << "could not read from file: " << argv[2] << endl;
-    exit(EXIT_FAILURE);
-  }
-
-  Image* i2 = new Image;
-  if (!ReadImage(argv[3],i2)) {
-    cout << "could not read from file: " << argv[3] << endl;
-    exit(EXIT_FAILURE);
-  }
-
-  Image* i3 = new Image;
-  if (!ReadImage(argv[4],i3)) {
-    cout << "could not read from file: " << argv[4] << endl;
-    exit(EXIT_FAILURE);
-  }
-
-
-  int threshold;
-  try {
-    threshold = stoi(argv[5]); 
-  } catch (exception& e) {
-    cout << "invalid value for threshold: " << e.what() << "\n";
-    exit(EXIT_FAILURE);
-  }
-
-  d_matrix source_inverse;
-  init_d_matrix(source_inverse,source_directions.size());
-
-  inverse(source_directions,source_inverse);
-  Image* out = compute_albedo_in_images(i1,i2,i3,threshold,source_inverse);
-  if (!WriteImage(argv[6],*out)) {
-    cout << "could not write image to: " << argv[6] << endl;
-    exit(EXIT_FAILURE);
-  }
-
-  cout << "wrote image to: " << argv[6] << endl;
-  exit(EXIT_SUCCESS);
-} 
