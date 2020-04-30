@@ -47,7 +47,7 @@ CVP::Image* create_binary_image(CVP::Image* in_image, size_t threshold) {
 
   +---------+---------+
   |         +         |
-  |    D    +    C    |
+  |    0    +    0    |
   |---------+---------|
   |         +         |
   |    B    +    A    |
