@@ -54,6 +54,7 @@ int main(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
 
+  cout << "a\n";
   vector<vector<int>> voting_array;
 
   if (!read_voting_array_from_file(argv[2],voting_array)) {
@@ -69,20 +70,26 @@ int main(int argc, char** argv) {
     cout << "could not read value for threshold\n";
     exit(EXIT_FAILURE);
   }
+
+  cout << "b\n";
   voting_array = threshold_voting_array(voting_array,threshold);
+  cout << "c\n";
   int num_weights;
   auto weighted_voting_array = make_weighted_voting_array(voting_array,num_weights);
+  cout << "d\n";
   auto lines = find_lines(weighted_voting_array,num_weights);
-
+  cout << "e\n";
   cout << "found " << lines.size() << " lines\n";
+  cout << "f\n";
   draw_lines_on_image(image,lines);
+  
 
   if (!WriteImage(argv[4], *image)) {
     cout << "couldnt write image to" << argv[4] << "\n";
     exit(EXIT_FAILURE);
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 

@@ -50,12 +50,13 @@ h4: h4.o $(OBJS)
 
 
 clean:
-	(rm -fP *.o; rm -P h1 h2 h3 h4; rm -fP *.pgm; rm -fP *Output*)
+	(rm -f *.o; rm h1 h2 h3 h4; rm -f *.pgm; rm -f *Output*)
 
 
 runall:
 	make run1
 	make run2
+	make run3
 	open h4Output*
 
 run1:
@@ -69,6 +70,12 @@ run2:
 	./h2 h1Output.2.pgm 55 h2Output.2.pgm	
 	./h3 h2Output.2.pgm h3Output.2.pgm h3Output.2.txt
 	./h4 images/hough_simple_2.pgm h3Output.2.txt 280 h4Output.2.pgm
+
+run3:
+	./h1 images/ims_cubes.pgm h1Output.3.pgm
+	./h2 h1Output.3.pgm 175 h2Output.3.pgm
+	./h3 h2Output.3.pgm h3Output.3.pgm h3Output.3.txt
+	./h4 images/ims_cubes.pgm h3Output.3.txt 300 h4Output.3.pgm
 
 
 
